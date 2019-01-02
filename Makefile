@@ -3,6 +3,7 @@ GOOS=$(shell go env GOOS)
 GOARCH=$(shell go env GOARCH)
 
 PROJNAME=textAnalyzer
+SRC=./src/main.go ./src/reader.go ./src/model.go
 
 show-version:
 	@echo $(GOVERSION)
@@ -11,4 +12,9 @@ show-version:
 
 build:
 	@echo build $(PROJNAME)
-	@go build -o $(PROJNAME) ./src/main.go ./src/reader.go
+	@go build -o $(PROJNAME) $(SRC)
+
+exec:
+	@echo build and exec $(PROJNAME)
+	@go build -o $(PROJNAME) $(SRC)
+	@./$(PROJNAME) ./src/data/input.txt ./src/data/master.txt

@@ -2,22 +2,26 @@ package main
 
 import (
 	"encoding/csv"
-	"fmt"
+	"io/ioutil"
 	"log"
 	"strings"
 )
 
-func Read() {
-	// テスト用文字列
-	str := "test\tテスト\nHello\tこんにちは"
+func Read(path string, masterPath string) {
+	// ファイル読み込み
+	contents, err := ioutil.ReadFile(path)
+	if err != nil {
+		// ファイルオープンエラー
+		log.Fatal(err)
+	}
 
 	// CSVのReaderを用意
-	r := csv.NewReader(strings.NewReader(str))
+	r := csv.NewReader(strings.NewReader(string(contents)))
 
 	// デリミタ(TSVなら\t, CSVなら,)設定
 	r.Comma = '\t'
 
-	// コメント設定(なんとコメント文字を指定できる!)
+	// コメント設定
 	r.Comment = '#'
 
 	// 全部読みだす
@@ -27,13 +31,12 @@ func Read() {
 	}
 
 	// 各行でループ
+	inst := Inst()
 	for _, v := range records {
-		// 1列目
-		fmt.Print(v[0])
-
-		fmt.Print(" | ")
-
-		// 2列目
-		fmt.Println(v[1])
+		// 読み込んだデータを登録する
+		inst.Table.Table = append(inst.Table.Table[:], [3]Item{
+			Item{Name: v[0]},
+			Item{Name: v[1]},
+			Item{Name: v[2]}})
 	}
 }
