@@ -1,31 +1,32 @@
 package main
 
+// Item 各アイテム
 type Item struct {
 	Name string
 }
 
-// 各アイテムのマスター
+// ItemMaster 各アイテムのマスター
 type ItemMaster struct {
 	Items []Item
 }
 
-// 盤面
+// TableModel 盤面
 type TableModel struct {
 	Table [][3]Item
 }
 
-// 結果の要素
+// ResultItem 結果の要素
 type ResultItem struct {
 	Max      int
 	GetItems []Item
 }
 
-// 結果
+// Result 結果
 type Result struct {
 	Result []ResultItem
 }
 
-// inst
+// InstType インスタンス
 type InstType struct {
 	Table  TableModel
 	Result Result
@@ -33,6 +34,7 @@ type InstType struct {
 
 var inst *InstType = &InstType{}
 
+// Inst シングルトンインスタンス返却
 func Inst() *InstType {
 	return inst
 }

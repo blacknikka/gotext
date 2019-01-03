@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// Read ファイルを読み込んで、オブジェクトを取得します。
 func Read(path string, masterPath string) {
 	// ファイル読み込み
 	contents, err := ioutil.ReadFile(path)
