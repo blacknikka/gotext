@@ -24,10 +24,9 @@ func Read(path string, masterPath string) {
 		data1 := GetMasterIndex(v[0])
 		data2 := GetMasterIndex(v[1])
 		data3 := GetMasterIndex(v[2])
-		inst.Table.Table = append(inst.Table.Table[:], [3]int{
-			data1,
-			data2,
-			data3})
+		inst.Table.Table[0] = append(inst.Table.Table[0], data1)
+		inst.Table.Table[1] = append(inst.Table.Table[1], data2)
+		inst.Table.Table[2] = append(inst.Table.Table[2], data3)
 	}
 
 	for _, v := range Inst().Table.Table {

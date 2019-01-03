@@ -21,5 +21,5 @@ func main() {
 	Read(args[0], args[1])
 
 	// 解析
-
+	AnalyzeExec()
 }
