@@ -19,4 +19,7 @@ func main() {
 
 	// read file
 	Read(args[0], args[1])
+
+	// 解析
+
 }

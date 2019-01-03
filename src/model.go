@@ -1,38 +1,37 @@
 package main
 
-// Item 各アイテム
-type Item struct {
-	Name string
-}
-
-// ItemMaster 各アイテムのマスター
-type ItemMaster struct {
-	Items []Item
-}
-
-// TableModel 盤面
-type TableModel struct {
-	Table [][3]Item
-}
-
 // ResultItem 結果の要素
 type ResultItem struct {
 	Max      int
 	GetItems []Item
 }
 
-// Result 結果
-type Result struct {
-	Result []ResultItem
+// Table 取得したテーブル情報
+type Table struct {
+	Table [][3]int
 }
 
 // InstType インスタンス
 type InstType struct {
-	Table  TableModel
-	Result Result
+	Table  Table
+	Master Master
+	Result []ResultItem
 }
 
-var inst *InstType = &InstType{}
+// InstType インスタンス
+var inst *InstType
+
+func init() {
+	inst = &InstType{
+		Table: Table{
+			Table: [][3]int{},
+		},
+		Master: Master{
+			Dic:       map[int]Item{},
+			DicByName: map[string]int{},
+		},
+	}
+}
 
 // Inst シングルトンインスタンス返却
 func Inst() *InstType {
