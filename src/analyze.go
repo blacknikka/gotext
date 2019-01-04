@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"sort"
 	"strconv"
 )
@@ -208,13 +207,7 @@ func removeItem() bool {
 	sort.Sort(sort.IntSlice(deleteListR))
 
 	// 削除するリストができたので、要素を元データから削除する
-	removeFromArray()
-
-	ret := true
-	if len(dataL) < 3 || len(dataC) < 3 || len(dataR) < 3 {
-		// 削除した結果要素が３つより小さくなるとエラーとする
-		ret = false
-	}
+	ret := removeFromArray()
 
 	return ret
 }
@@ -233,33 +226,49 @@ func removeDistinct(array []int) []int {
 	return ret
 }
 
-func removeFromArray() {
+func removeFromArray() bool {
+	ret := true
+	var r bool
 	for i := (len(deleteListL) - 1); i >= 0; i-- {
 		// 配列から削除
-		dataL = unset(dataL, deleteListL[i])
+		dataL, r = unset(dataL, deleteListL[i])
+		if r == false {
+			ret = false
+			break
+		}
 	}
 
 	for i := (len(deleteListC) - 1); i >= 0; i-- {
 		// 配列から削除
-		dataC = unset(dataC, deleteListC[i])
+		dataC, r = unset(dataC, deleteListC[i])
+		if r == false {
+			ret = false
+			break
+		}
 	}
 
 	for i := (len(deleteListR) - 1); i >= 0; i-- {
 		// 配列から削除
-		dataR = unset(dataR, deleteListR[i])
+		dataR, r = unset(dataR, deleteListR[i])
+		if r == false {
+			ret = false
+			break
+		}
 	}
+
+	return ret
 }
 
 // 配列を削除する
-func unset(s []int, i int) []int {
-	if i >= len(s) {
-		log.Fatal("削除エラー")
-		return s
+func unset(s []int, i int) ([]int, bool) {
+	if i >= (len(s)-1) || len(s) <= 3 {
+		// 最後の要素を消すことはNG（すでにこの状態でおかしい）
+		return s, false
 	}
 
-	ret := []int{}
-	ret = append([]int{s[len(s)-1]}, s[:i]...)
+	ret := []int{s[len(s)-1]}
+	ret = append(ret, s[:i]...)
 	ret = append(ret, s[i+1:len(s)-1]...)
 
-	return ret
+	return ret, true
 }
