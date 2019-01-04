@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"sort"
+	"strconv"
 )
 
 const (
@@ -31,6 +33,30 @@ func init() {
 
 // AnalyzeExec 解析実行する
 func AnalyzeExec() {
+	// 解析を行う
+
+	// idx := 0
+	for i := 0; i < len(Inst().Table.Table[0]); i++ {
+		for j := 0; j < len(Inst().Table.Table[1]); j++ {
+			for k := 0; k < len(Inst().Table.Table[2]); k++ {
+				fmt.Println("i:" + strconv.Itoa(i))
+				fmt.Println("j:" + strconv.Itoa(j))
+				fmt.Println("k:" + strconv.Itoa(k))
+				if analyze(i, j, k) == false {
+					// このパターンは異常として記録
+				}
+				fmt.Println(Inst().Result[len(Inst().Result)-1])
+			}
+		}
+	}
+
+	// // 残り情報
+	// fmt.Println(dataL)
+	// fmt.Println(dataC)
+	// fmt.Println(dataR)
+}
+
+func analyze(ofsL int, ofsC int, ofsR int) bool {
 	// 領域を作る
 	dataL = make([]int, len(Inst().Table.Table[0]))
 	dataC = make([]int, len(Inst().Table.Table[1]))
@@ -39,61 +65,59 @@ func AnalyzeExec() {
 	copy(dataC, Inst().Table.Table[1])
 	copy(dataR, Inst().Table.Table[2])
 
-	// 解析を行う
-	analyze(0, 0, 0)
+	dataL = makeTargetArray(dataL, ofsL)
+	dataC = makeTargetArray(dataC, ofsC)
+	dataR = makeTargetArray(dataR, ofsR)
+	ofsLP0 := 0
+	ofsLP1 := 1
+	ofsLP2 := 2
+	ofsCP0 := 0
+	ofsCP1 := 1
+	ofsCP2 := 2
+	ofsRP0 := 0
+	ofsRP1 := 1
+	ofsRP2 := 2
 
-	// idx := 0
-	for i := 0; i < len(dataL); i++ {
-		for j := 0; j < len(dataC); j++ {
-			for k := 0; k < len(dataR); k++ {
+	ret := true
 
-			}
-		}
-	}
+	result = make([]int, 0)
 
-	// リストを表示
-	for _, v := range result {
-		fmt.Println(v)
-	}
-}
+	// combo counter
+	combo := 0
 
-func analyze(ofsL int, ofsC int, ofsR int) {
 	for true {
 		cont = false
-		ofsLP1 := getOfsP1(ofsL, dataL)
-		ofsLP2 := getOfsP2(ofsL, dataL)
-		ofsCP1 := getOfsP1(ofsC, dataC)
-		ofsCP2 := getOfsP2(ofsC, dataC)
-		ofsRP1 := getOfsP1(ofsR, dataR)
-		ofsRP2 := getOfsP2(ofsR, dataR)
+		deleteListL = []int{}
+		deleteListC = []int{}
+		deleteListR = []int{}
 
 		// L
-		if dataL[ofsL] == dataL[ofsLP1] {
-			pushResult(dataL[ofsL], left, ofsL, left, ofsLP1)
+		if dataL[ofsLP0] == dataL[ofsLP1] {
+			pushResult(dataL[ofsLP0], left, ofsLP0, left, ofsLP1)
 		}
 		if dataL[ofsLP1] == dataL[ofsLP2] {
 			pushResult(dataL[ofsLP1], left, ofsLP1, left, ofsLP2)
 		}
 
 		// C
-		if dataC[ofsC] == dataC[ofsCP1] {
-			pushResult(dataC[ofsC], center, ofsC, center, ofsCP1)
+		if dataC[ofsCP0] == dataC[ofsCP1] {
+			pushResult(dataC[ofsCP0], center, ofsCP0, center, ofsCP1)
 		}
 		if dataC[ofsCP1] == dataC[ofsCP2] {
 			pushResult(dataC[ofsCP1], center, ofsCP1, center, ofsCP2)
 		}
 
 		// R
-		if dataR[ofsR] == dataR[ofsRP1] {
-			pushResult(dataR[ofsR], right, ofsR, right, ofsRP1)
+		if dataR[ofsRP0] == dataR[ofsRP1] {
+			pushResult(dataR[ofsRP0], right, ofsRP0, right, ofsRP1)
 		}
 		if dataR[ofsRP1] == dataR[ofsRP2] {
 			pushResult(dataR[ofsRP1], right, ofsRP1, right, ofsRP2)
 		}
 
 		// 横
-		if dataL[ofsL] == dataC[ofsC] {
-			pushResult(dataL[ofsL], left, ofsL, center, ofsC)
+		if dataL[ofsLP0] == dataC[ofsCP0] {
+			pushResult(dataL[ofsLP0], left, ofsLP0, center, ofsCP0)
 		}
 		if dataL[ofsLP1] == dataC[ofsCP1] {
 			pushResult(dataL[ofsLP1], left, ofsLP1, center, ofsCP1)
@@ -102,8 +126,8 @@ func analyze(ofsL int, ofsC int, ofsR int) {
 			pushResult(dataL[ofsLP2], left, ofsLP2, center, ofsCP2)
 		}
 
-		if dataR[ofsR] == dataC[ofsC] {
-			pushResult(dataR[ofsR], right, ofsR, center, ofsC)
+		if dataR[ofsRP0] == dataC[ofsCP0] {
+			pushResult(dataR[ofsRP0], right, ofsRP0, center, ofsCP0)
 		}
 		if dataR[ofsRP1] == dataC[ofsCP1] {
 			pushResult(dataR[ofsRP1], right, ofsRP1, center, ofsCP1)
@@ -116,29 +140,30 @@ func analyze(ofsL int, ofsC int, ofsR int) {
 			// 条件成立しなかったらループを抜ける
 			break
 		} else {
+			combo++
 			// 条件成立の場合には要素を消して繰り返し
-			removeItem()
-			break
+			if removeItem() == false {
+				// 異常として終了させる
+				ret = false
+				break
+			}
 		}
 	}
+
+	// 結果の記録
+	Inst().Result = append(Inst().Result, ResultItem{
+		Max:      combo,
+		GetItems: result,
+		IsError:  ret != false,
+	})
+
+	return ret
 }
 
-func getOfsP1(ofs int, array []int) int {
-	ofsP1 := ofs + 1
-	if ofsP1 >= len(array) {
-		ofsP1 -= len(array)
-	}
-
-	return ofsP1
-}
-
-func getOfsP2(ofs int, array []int) int {
-	ofsP2 := ofs + 2
-	if ofsP2 >= len(array) {
-		ofsP2 -= len(array)
-	}
-
-	return ofsP2
+func makeTargetArray(array []int, ofs int) []int {
+	ret := array[ofs:]
+	ret = append(ret[:], array[:ofs]...)
+	return ret
 }
 
 func pushResult(get int, pos1 int, pos1ofs int, pos2 int, pos2ofs int) {
@@ -171,7 +196,7 @@ func pushResult(get int, pos1 int, pos1ofs int, pos2 int, pos2ofs int) {
 }
 
 // 条件に一致した要素を削除する処理
-func removeItem() {
+func removeItem() bool {
 	// 重複を削除
 	deleteListL = removeDistinct(deleteListL)
 	deleteListC = removeDistinct(deleteListC)
@@ -183,6 +208,15 @@ func removeItem() {
 	sort.Sort(sort.IntSlice(deleteListR))
 
 	// 削除するリストができたので、要素を元データから削除する
+	removeFromArray()
+
+	ret := true
+	if len(dataL) < 3 || len(dataC) < 3 || len(dataR) < 3 {
+		// 削除した結果要素が３つより小さくなるとエラーとする
+		ret = false
+	}
+
+	return ret
 }
 
 // 重複を削除する処理
@@ -195,6 +229,37 @@ func removeDistinct(array []int) []int {
 			ret = append(ret, v)
 		}
 	}
+
+	return ret
+}
+
+func removeFromArray() {
+	for i := (len(deleteListL) - 1); i >= 0; i-- {
+		// 配列から削除
+		dataL = unset(dataL, deleteListL[i])
+	}
+
+	for i := (len(deleteListC) - 1); i >= 0; i-- {
+		// 配列から削除
+		dataC = unset(dataC, deleteListC[i])
+	}
+
+	for i := (len(deleteListR) - 1); i >= 0; i-- {
+		// 配列から削除
+		dataR = unset(dataR, deleteListR[i])
+	}
+}
+
+// 配列を削除する
+func unset(s []int, i int) []int {
+	if i >= len(s) {
+		log.Fatal("削除エラー")
+		return s
+	}
+
+	ret := []int{}
+	ret = append([]int{s[len(s)-1]}, s[:i]...)
+	ret = append(ret, s[i+1:len(s)-1]...)
 
 	return ret
 }

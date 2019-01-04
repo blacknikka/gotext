@@ -3,7 +3,10 @@ package main
 // ResultItem 結果の要素
 type ResultItem struct {
 	Max      int
-	GetItems []Item
+	GetItems []int
+
+	// Error true:エラー発生
+	IsError bool
 }
 
 // Table 取得したテーブル情報
